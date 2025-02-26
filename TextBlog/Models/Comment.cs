@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TextBlog.Models
 {
-    public class Coment
+    public class Comment
     {
 
         [Key]
@@ -26,7 +26,7 @@ namespace TextBlog.Models
         [Required]
         public DateTime PublishTime { get; set; } // Время публикации комментария
 
-        public Coment(Guid id, Guid authorId, Guid postId, string text)
+        public Comment(Guid id, Guid authorId, Guid postId, string text)
         {
             Id = id;
             AuthorId = authorId;

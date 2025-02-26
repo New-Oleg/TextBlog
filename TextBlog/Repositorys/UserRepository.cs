@@ -1,4 +1,5 @@
-﻿using TextBlog.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using TextBlog.Data;
 using TextBlog.Dtos;
 using TextBlog.Models;
 
@@ -15,7 +16,9 @@ namespace TextBlog.Repositorys
 
         public User? GetById(Guid id)
         {
-            return _context.Users.Find(id); 
+
+            return _context.Users.Local.FirstOrDefault(u => u.Id == id)
+                ?? _context.Users.FirstOrDefault(u => u.Id == id);
         }
 
         public User? GetByLogin(string login)

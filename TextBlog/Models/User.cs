@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-
 namespace TextBlog.Models
 {
     public class User
@@ -25,19 +24,37 @@ namespace TextBlog.Models
         [Required]
         public string Role { get; set; } // Роль пользователя
 
-        public User(Guid id, string name, string login, string passwordHash, string role)
+
+        public User(Guid id, string name, string login, string password, string role)
         {
             Id = id;
             Name = name;
             Login = login;
-            PasswordHash = passwordHash;
+            PasswordHash = HashPassword(password); // Хешируем пароль при создании пользователя
             Subscriptions = new List<Guid>();
             Role = role;
         }
 
         public User() { }
 
-       
+        // Метод для хеширования пароля
+        public void SetPassword(string password)
+        {
+            PasswordHash = HashPassword(password);
+        }
+
+        // Метод для проверки пароля
+        public bool VerifyPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, PasswordHash);
+        }
+
+        // Метод для создания хеша пароля
+        private static string HashPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
     }
 
 }

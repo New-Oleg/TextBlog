@@ -13,7 +13,7 @@ namespace TextBlog.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Post> Posts { get; set; }
-        public DbSet<Coment> Comments { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,12 +25,12 @@ namespace TextBlog.Data
                 .HasForeignKey(p => p.AuthorId);
 
             modelBuilder.Entity<User>()
-                .HasMany<Coment>()
+                .HasMany<Comment>()
                 .WithOne()
                 .HasForeignKey(c => c.AuthorId);
 
             modelBuilder.Entity<Post>()
-                .HasMany<Coment>()
+                .HasMany<Comment>()
                 .WithOne()
                 .HasForeignKey(c => c.PostId);
         }
