@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TextBlog.Domain
+
+namespace TextBlog.Models
 {
     public class User
     {
@@ -24,15 +25,19 @@ namespace TextBlog.Domain
         [Required]
         public string Role { get; set; } // Роль пользователя
 
-        public User(Guid id, string name, string login, string passwordHash, List<Guid> subscriptions, string role)
+        public User(Guid id, string name, string login, string passwordHash, string role)
         {
             Id = id;
             Name = name;
             Login = login;
             PasswordHash = passwordHash;
-            Subscriptions = subscriptions;
+            Subscriptions = new List<Guid>();
             Role = role;
         }
+
+        public User() { }
+
+       
     }
 
 }

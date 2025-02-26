@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TextBlog.Domain
+namespace TextBlog.Models
 {
-    internal class Coment
+    public class Post 
     {
 
         [Key]
@@ -16,25 +16,27 @@ namespace TextBlog.Domain
         [Required]
         public Guid AuthorId { get; set; } // ID автора
 
-        [Required]
-        public Guid PostId { get; set; } // ID поста
+        [Required] 
+        public string Text { get; set; }
 
         [Required]
-        [MaxLength(100)]
-        public string Text { get; set; } // Текст комментария
+        public DateTime PublishTime { get; set; } // Время публикации
 
-        [Required]
-        public DateTime PublishTime { get; set; } // Время публикации комментария
+        public int Likes { get; set; } // Количество лайков
 
-        public Coment(Guid id, Guid authorId, Guid postId, string text)
+        public int Dislikes { get; set; } // Количество дизлайков
+
+        public Post(Guid id, Guid authorId, string text)
         {
             Id = id;
             AuthorId = authorId;
-            PostId = postId;
             Text = text;
 
             PublishTime = DateTime.UtcNow;
+            Likes = 0;
+            Dislikes = 0;
+
         }
+
     }
 }
-

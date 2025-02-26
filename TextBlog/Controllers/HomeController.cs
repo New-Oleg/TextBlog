@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using TextBlog.Models;
+using TextBlog.Repositorys;
 
 namespace TextBlog.Controllers
 {
@@ -19,6 +20,10 @@ namespace TextBlog.Controllers
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+        public IActionResult Users()
         {
             return View();
         }
