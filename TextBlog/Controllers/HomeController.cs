@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using TextBlog.Dtos;
 using TextBlog.Models;
 using TextBlog.Repositorys;
 
@@ -9,9 +10,12 @@ namespace TextBlog.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IUserRepository _userRepository;
+
+        public HomeController(ILogger<HomeController> logger, IUserRepository userRepository)
         {
             _logger = logger;
+            _userRepository = userRepository;
         }
 
         public IActionResult Index()
@@ -19,14 +23,6 @@ namespace TextBlog.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-        public IActionResult Users()
-        {
-            return View();
-        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
