@@ -7,7 +7,7 @@ namespace TextBlog.Repositorys
     {
         User? GetById(Guid id); 
         User? GetByLogin(string login); 
-        IEnumerable<User> GetAll();
+        IEnumerable<UserDto> GetAll();
         void Add(User user);
         void Update(User user);
         void Delete(Guid id);

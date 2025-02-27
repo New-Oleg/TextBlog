@@ -1,8 +1,11 @@
 ﻿@using System.Linq
+@using TextBlog.Dtos
 @model TextBlog.Dtos.PostDto
 
 @{
 	ViewData["Title"] = "Детали поста";
+
+	var comments = ViewData["comments"] as IEnumerable<CommentDto>; // Приведение типа
 }
 
 <div class="card">
@@ -11,11 +14,66 @@
 		<p>Огловление: @Model.Hider</p>
 		<p>Содержание: @Model.Text</p>
 		<p>Время Публикации - @Model.PublishTime</p>
-		
+
 		<p>лайков - @Model.Likes</p>
 		<p>дизлайков - @Model.Dislikes</p>
 
 		<h5>Комментарии:</h5>
+
+		<form method="post" action="/Post/AddComment">
+			<input type="hidden" name="postId" value="@Model.Id" />
+			<input type="text" name="commentText" placeholder="Оставить комментарий" class="form-control" required />
+			<button type="submit" class="btn btn-primary mt-2">Отправить</button>
+		</form>
+
+		<div>
+			@if (comments != null)
+			{
+				<ul>
+					@foreach (var comment in comments){
+						<h4>comment.AuthorId: Text</h4>
+					}
+				</ul>
+			}
+			else
+			{
+				<p>Нет комментариев</p>
+			}
+		</div>
 	</div>
 
 </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+	const connection = new signalR.HubConnectionBuilder()
+		.withUrl("/commentHub")
+		.build();
+
+	connection.on("ReceiveComment", function (postId, user, message) {
+		if (postId === "@Model.Id") {
+			const commentList = document.getElementById("commentList");
+			const newComment = document.createElement("li");
+			newComment.innerHTML = `<strong>${user}:</strong> ${message}`;
+			commentList.appendChild(newComment);
+		}
+	});
+
+	connection.start().catch(err => console.error(err.toString()));
+</script>
+
+<style>
+	.form-container {
+		max-width: 400px;
+		margin: 0 auto;
+		padding: 20px;
+		border-radius: 10px;
+		background-color: #f8f9fa;
+		box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	}
+
+	.btn-block {
+		width: 100%;
+	}
+</style>

@@ -27,13 +27,16 @@ namespace TextBlog.Repositorys
             return _context.Users.FirstOrDefault(u => u.Login == login);
         }
 
-        public IEnumerable<User> GetAll()
+        public IEnumerable<UserDto> GetAll()
         {
             try
             {
-                return _context.Users.ToList();
+                return _context.Users.ToList().Select(user => user.ParsToDto());
             }
-            catch { return new List<User>(); }
+            catch
+            {
+                return new List<UserDto>();
+            }
         }
 
         public void Add(User user)

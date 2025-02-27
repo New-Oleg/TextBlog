@@ -2,16 +2,20 @@ using Microsoft.EntityFrameworkCore;
 using TextBlog.Data;
 using TextBlog.Repositorys;
 using TextBlog.Services;
+using TextBlog.SignalRHub;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();      //Repos
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-builder.Services.AddScoped<AuthService>();
+
+builder.Services.AddScoped<AuthService>(); //jwr/auth 
+
+builder.Services.AddSignalR(); //signalR
 
 
 
@@ -19,6 +23,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
+
+
+app.MapHub<CommentHub>("/commentHub"); //signalR
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

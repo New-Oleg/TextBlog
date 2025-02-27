@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TextBlog.Dtos;
 using TextBlog.Models;
 using TextBlog.Repositorys;
 using TextBlog.Services;
@@ -86,5 +87,53 @@ namespace TextBlog.Controllers
             Response.Cookies.Delete("AuthToken"); // Удаляем куку с токеном
             return RedirectToAction("Login", "Padge"); // Редирект на страницу входа
         }
+
+
+        [HttpGet("/FundUsers")]
+        public IActionResult FindUsers(string query)
+        {
+            var token = Request.Cookies["AuthToken"];
+
+            if (string.IsNullOrEmpty(token) || !_authService.ValidateToken(token)) //если токен инвалид редирект на страницу логина
+            {
+                return RedirectToAction("Login", "Padge");
+            }
+            if (string.IsNullOrEmpty(query))
+            {
+                return View(_userRepos.GetAll());
+            }
+
+            var users = _userRepos.GetAll()
+                          .Where(u => u.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
+                          .ToList();
+
+            return View(users); 
+        }
+
+        [HttpGet("/{userId}")]
+        public IActionResult User(Guid userId)
+        {
+            var token = Request.Cookies["AuthToken"];
+
+            if (string.IsNullOrEmpty(token) || !_authService.ValidateToken(token)) //если токен инвалид редирект на страницу логина
+            {
+                return RedirectToAction("Login", "Padge");
+            }
+
+            var userDto = _userRepos.GetById(userId); // получение чела(дто) по ID
+            if (userDto == null) // проверка на существование чела
+            {
+                return Unauthorized(new { message = "Пользователь не найден" });
+            }
+
+            var postDto = _postRepos.GetByAuthor(userDto.Id); // если есть посты отоброзить их
+            if (postDto != null)
+            {
+                ViewData["Posts"] = postDto;
+            }
+
+            return View("Index", userDto.ParsToDto());
+        }
+
     }
 }

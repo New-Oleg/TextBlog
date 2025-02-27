@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TextBlog.Data;
+using TextBlog.Dtos;
 using TextBlog.Models;
 
 namespace TextBlog.Repositorys
@@ -13,15 +14,22 @@ namespace TextBlog.Repositorys
             _context = context;
         }
 
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
         public Comment? GetById(Guid id)
         {
             return _context.Comments.Local.FirstOrDefault(c => c.Id == id)
             ?? _context.Comments.FirstOrDefault(c => c.Id == id);
         }
 
-        public IEnumerable<Comment> GetByPostId(Guid postId)
+        public IEnumerable<CommentDto> GetByPostId(Guid postId)
         {
-            return _context.Comments.Where(c => c.PostId == postId).OrderBy(c => c.PublishTime).ToList();
+            return _context.Comments
+                .Where(c => c.PostId == postId)
+                .Select(c => c.ParsToDto())
+                .ToList();
         }
 
         public void Add(Comment comment)
