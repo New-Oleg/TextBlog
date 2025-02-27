@@ -15,9 +15,16 @@ namespace TextBlog.Data
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
 
+
+
+ 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>().ToTable("users");   // Принудительно задаем имя
+            modelBuilder.Entity<Post>().ToTable("posts");
+            modelBuilder.Entity<Comment>().ToTable("comments");
 
             modelBuilder.Entity<User>()
                 .HasMany<Post>()

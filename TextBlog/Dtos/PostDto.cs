@@ -4,9 +4,11 @@ namespace TextBlog.Dtos
 {
     public class PostDto
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
 
         public Guid AuthorId { get; set; } // ID автора
+
+        public string Hider { get; set; }
 
         public string Text { get; set; }
 

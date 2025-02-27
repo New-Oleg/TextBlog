@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TextBlog.Dtos;
 
 namespace TextBlog.Models
 {
@@ -19,24 +20,26 @@ namespace TextBlog.Models
         [Required]
         public string PasswordHash { get; set; } // Хранение пароля в хешированном виде
 
-        public List<Guid> Subscriptions { get; set; } = new List<Guid>(); // ID подписок
-
-        [Required]
-        public string Role { get; set; } // Роль пользователя
+        public List<Guid>? Subscriptions { get; set; } = new List<Guid>();// ID подписок
 
 
-        public User(Guid id, string name, string login, string password, string role)
+
+        public User(Guid id, string name, string login, string password)
         {
             Id = id;
             Name = name;
             Login = login;
             PasswordHash = HashPassword(password); // Хешируем пароль при создании пользователя
             Subscriptions = new List<Guid>();
-            Role = role;
         }
 
         public User() { }
 
+
+        public UserDto ParsToDto() 
+        {
+            return new UserDto { Id = Id, Name = Name, Subscriptions = Subscriptions };
+        }
         // Метод для хеширования пароля
         public void SetPassword(string password)
         {

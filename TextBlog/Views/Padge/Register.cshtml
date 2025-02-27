@@ -1,0 +1,52 @@
+﻿@model TextBlog.Dtos.UserRegAndLogDto
+
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<h2 class="text-center">Регистрация</h2>
+
+<form asp-action="Register" asp-controller="Auth" method="post" class="form-container">
+
+    <div class="form-group">
+        <label asp-for="Name">Ник</label>
+        <input asp-for="Name" class="form-control" placeholder="Введите Ник" required />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Login">Логин</label>
+        <input asp-for="Login" class="form-control" placeholder="Введите логин" required />
+        <span asp-validation-for="Login" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password">Пароль</label>
+        <input asp-for="Password" type="password" class="form-control" placeholder="Введите пароль" required />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+</form>
+
+<div class="text-center">
+    <a asp-action="Login" asp-controller="Padge">Уже есть аккаунт?</a>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .form-container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .btn-block {
+        width: 100%;
+    }
+</style>

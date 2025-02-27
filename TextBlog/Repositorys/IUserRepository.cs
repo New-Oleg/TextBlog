@@ -1,4 +1,5 @@
-﻿using TextBlog.Models;
+﻿using TextBlog.Dtos;
+using TextBlog.Models;
 
 namespace TextBlog.Repositorys
 {
@@ -16,5 +17,6 @@ namespace TextBlog.Repositorys
         void Subscribe(Guid userId, Guid authorId);
         void Unsubscribe(Guid userId, Guid authorId);
         IEnumerable<User> GetSubscribedUsers(Guid userId);
+        public UserDto? GetUserDtoFromToken(string token);
     }
 }

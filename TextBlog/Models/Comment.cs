@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using TextBlog.Dtos;
 
 namespace TextBlog.Models
 {
@@ -34,6 +30,14 @@ namespace TextBlog.Models
             Text = text;
 
             PublishTime = DateTime.UtcNow;
+        }
+
+        public Comment() { }
+
+        public CommentDto ParsToDto()
+        {
+            return new CommentDto { Id = Id, AuthorId = AuthorId, 
+                                    PostId = PostId, Text = Text };
         }
     }
 }

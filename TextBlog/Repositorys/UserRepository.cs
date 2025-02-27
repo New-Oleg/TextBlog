@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.EntityFrameworkCore;
 using TextBlog.Data;
 using TextBlog.Dtos;
 using TextBlog.Models;
@@ -104,6 +105,32 @@ namespace TextBlog.Repositorys
             if (user == null) throw new ArgumentException($"User with ID '{userId}' not found.");
 
             return _context.Users.Where(u => user.Subscriptions.Contains(u.Id)).ToList();
+        }
+
+
+        public UserDto? GetUserDtoFromToken(string token)
+        {
+            try
+            {
+                var jwtHandler = new JwtSecurityTokenHandler();
+                var jwtToken = jwtHandler.ReadToken(token) as JwtSecurityToken;
+
+                if (jwtToken == null) return null;
+
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return null;
+                User u = GetById(Guid.Parse(userIdClaim));
+
+                if (u == null) return null;
+
+                return u.ParsToDto();
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

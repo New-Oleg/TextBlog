@@ -1,0 +1,28 @@
+﻿@using System.Linq
+@model TextBlog.Dtos.UserDto
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="card">
+    <div class="card-body">
+        <p>Имя: @Model.Name</p>
+        <p> Id: @Model.Id</p>
+
+        <h5>Подписки:</h5>
+        @if (Model.Subscriptions != null && Model.Subscriptions.Any())
+        {
+            <ul>
+                @foreach (var sub in Model.Subscriptions)
+                {
+                    <li>@sub</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Нет подписок</p>
+        }
+    </div>
+</div>

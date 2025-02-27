@@ -1,7 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TextBlog.Dtos;
 using TextBlog.Models;
 using TextBlog.Repositorys;
@@ -10,8 +7,7 @@ using TextBlog.Services;
 namespace TextBlog.Controllers
 {
     [Route("[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : Controller
     {
         private readonly IUserRepository _userRepo;
         private readonly AuthService _authService;
@@ -22,44 +18,39 @@ namespace TextBlog.Controllers
             _authService = authService;
         }
 
-        [HttpPost("register")]
-        public IActionResult Register([FromBody] UserRegAndLogDto request)
+        [HttpPost("Register")]
+        public IActionResult Register(UserRegAndLogDto request)
         {
             if (_userRepo.Exists(request.Login))
-                return BadRequest("Пользователь с таким логином уже существует");
+                return Json(new { success = false, message = "Пользователь с таким логином уже существует" });
 
             var user = new User
             {
                 Id = Guid.NewGuid(),
+                Name = request.Name,
                 Login = request.Login,
-                PasswordHash = HashPassword(request.Password),
-                Role = "User"
+                PasswordHash = _authService.HashPassword(request.Password),
             };
-
             _userRepo.Add(user);
-            return Ok(new { message = "Пользователь зарегистрирован" });
+            return RedirectToAction("Index", "Padge");
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] UserRegAndLogDto request)
+        public IActionResult Login(UserRegAndLogDto request)
         {
             var user = _userRepo.GetByLogin(request.Login);
-            if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
+            if (user == null || !_authService.VerifyPassword(request.Password, user.PasswordHash))
                 return Unauthorized("Неверный логин или пароль");
 
             var token = _authService.GenerateToken(user);
-            return Ok(new { Token = token });
+
+            // Сохранение токена в куки 
+            Response.Cookies.Append("AuthToken", token, new CookieOptions { HttpOnly = true, Secure = true });
+
+            // Редирект на Index в контроллере Padge
+            return RedirectToAction("Index", "Padge");
         }
 
-        private string HashPassword(string password)
-        {
-            using var sha256 = SHA256.Create();
-            return Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(password)));
-        }
 
-        private bool VerifyPassword(string inputPassword, string storedHash)
-        {
-            return HashPassword(inputPassword) == storedHash;
-        }
     }
 }
