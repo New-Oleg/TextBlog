@@ -28,12 +28,19 @@ namespace TextBlog.Controllers
             var post = new Post(
                 Guid.NewGuid(),
                 _userRepo.GetUserDtoFromToken(token).Id,
-                request.Hider,
-                request.Text
+                request.Text,
+                request.Hider
 
             );
+
             _postRepo.Add(post);
             return RedirectToAction("Index", "Padge");
+        }
+
+        [HttpGet("Post/Details/{postId}")]
+        public IActionResult Details(Guid postId) { 
+
+            return View(_postRepo.GetById(postId).ParsToDto());   
         }
     }
 }

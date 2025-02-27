@@ -1,28 +1,49 @@
 ﻿@using System.Linq
+@using TextBlog.Dtos
 @model TextBlog.Dtos.UserDto
 
 @{
     ViewData["Title"] = "Home Page";
+    
+    var posts = ViewData["Posts"] as IEnumerable<PostDto>; // Приведение типа
 }
+
 
 <div class="card">
     <div class="card-body">
         <p>Имя: @Model.Name</p>
         <p> Id: @Model.Id</p>
 
-        <h5>Подписки:</h5>
-        @if (Model.Subscriptions != null && Model.Subscriptions.Any())
+        <h5>Посты:</h5>
+        @if (posts != null)
         {
             <ul>
-                @foreach (var sub in Model.Subscriptions)
+                @foreach (var post in posts)
                 {
-                    <li>@sub</li>
+                    <a href="/Post/Details/@post.Id">
+                    <li>@post.Hider</li>
+                    </a>
                 }
             </ul>
         }
         else
         {
-            <p>Нет подписок</p>
+            <p>Нет постов</p>
         }
     </div>
 </div>
+
+<style>
+    .form-container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-block {
+        width: 100%;
+    }
+</style>

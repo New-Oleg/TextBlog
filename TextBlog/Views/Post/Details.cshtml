@@ -1,0 +1,21 @@
+﻿@using System.Linq
+@model TextBlog.Dtos.PostDto
+
+@{
+	ViewData["Title"] = "Детали поста";
+}
+
+<div class="card">
+
+	<div class="card-body">
+		<p>Огловление: @Model.Hider</p>
+		<p>Содержание: @Model.Text</p>
+		<p>Время Публикации - @Model.PublishTime</p>
+		
+		<p>лайков - @Model.Likes</p>
+		<p>дизлайков - @Model.Dislikes</p>
+
+		<h5>Комментарии:</h5>
+	</div>
+
+</div>

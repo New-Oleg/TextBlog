@@ -1,4 +1,6 @@
-﻿using TextBlog.Data;
+﻿using System.Collections.Generic;
+using TextBlog.Data;
+using TextBlog.Dtos;
 using TextBlog.Models;
 
 namespace TextBlog.Repositorys
@@ -18,20 +20,15 @@ namespace TextBlog.Repositorys
                 ?? _context.Posts.FirstOrDefault(c => c.Id == id);
         }
 
-        public IEnumerable<Post> GetByAuthor(Guid authorId)
+        public IEnumerable<PostDto> GetByAuthor(Guid authorId)
         {
-            return _context.Posts.Where(p => p.AuthorId == authorId).ToList();
-        }
-
-        public IEnumerable<Post> GetBySubscribedUsers(Guid userId)
-        {
-            var user = _context.Users.Find(userId);
-            if (user == null) return Enumerable.Empty<Post>();
-
             return _context.Posts
-                .Where(p => user.Subscriptions.Contains(p.AuthorId))
+                .Where(p => p.AuthorId == authorId)
+                .Select(p => p.ParsToDto()) // Используем метод ParsToDto() для преобразования
                 .ToList();
         }
+
+
 
         public void Add(Post post)
         {

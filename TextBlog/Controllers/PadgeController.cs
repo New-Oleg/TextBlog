@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TextBlog.Models;
 using TextBlog.Repositorys;
 using TextBlog.Services;
 
@@ -11,11 +12,13 @@ namespace TextBlog.Controllers
         private readonly AuthService _authService;
 
         private readonly IUserRepository _userRepos;
+        private readonly IPostRepository _postRepos;
 
-        public PadgeController(AuthService authService, IUserRepository userRepos)
+        public PadgeController(AuthService authService, IUserRepository userRepos, IPostRepository postRepos)
         {
             _authService = authService;
             _userRepos = userRepos;
+            _postRepos = postRepos;
         }
 
 
@@ -55,6 +58,13 @@ namespace TextBlog.Controllers
             {
                 return Unauthorized(new { message = "Пользователь не найден" });
             }
+
+            var postDto = _postRepos.GetByAuthor(userDto.Id);
+            if (postDto != null)
+            {
+                ViewData["Posts"] = postDto;
+            }
+
             return View(userDto); 
         }
 
