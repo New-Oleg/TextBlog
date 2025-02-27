@@ -69,5 +69,12 @@ namespace TextBlog.Controllers
             }
             return View();
         }
+
+        [HttpGet("Logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("AuthToken"); // Удаляем куку с токеном
+            return RedirectToAction("Login", "Padge"); // Редирект на страницу входа
+        }
     }
 }
