@@ -1,0 +1,30 @@
+﻿@model TextBlog.Dtos.UserDto
+@using TextBlog.Dtos
+
+@{
+    ViewData["Title"] = "Home Page";
+
+    var subs = ViewData["subscribes"] as IEnumerable<UserDto>;
+}
+
+<div class="card">
+    <div class="card-body">
+
+        <h5>Подписки:</h5>
+        @if (@Model.Subscriptions != null)  
+        {
+            <ul>
+                @foreach (var sub in subs)
+                {
+                    <li>
+                        <a href="/@sub.Id">Name: @sub.Name Id: @sub.Id </a>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Нет постов</p>
+        }
+    </div>
+</div>

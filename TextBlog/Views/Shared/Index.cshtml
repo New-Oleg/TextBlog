@@ -1,0 +1,134 @@
+﻿@using System.Linq
+@using System.Security.Claims
+@using TextBlog.Dtos
+@model TextBlog.Dtos.UserDto
+
+@{
+    ViewData["Title"] = "Профиль";
+
+    var posts = ViewData["Posts"] as IEnumerable<PostDto>;
+
+    var currentUserId = ViewData["meId"]?.ToString();
+
+    Guid parsedUserId;
+    bool isOwner = Guid.TryParse(currentUserId, out parsedUserId) && parsedUserId == Model.Id;
+}
+
+<div class="profile-container">
+    <div class="card profile-card">
+        <div class="card-body text-center">
+            <h3 class="text-primary">@Model.Name</h3>
+            <p class="text-muted">ID: @Model.Id</p>
+
+            @if (isOwner)
+            {
+                <a href="/subscribes" class="btn btn-outline-primary mt-2">Мои подписки</a>
+            }
+            else
+            {
+                <button id="subscribeBtn"
+                        class="btn @(Model.Subscriptions != null && Model.Subscriptions.Contains(parsedUserId) ? "btn-danger" : "btn-success") mt-2"
+                        data-user-id="@Model.Id"
+                        data-is-subscribed="@(Model.Subscriptions != null && Model.Subscriptions.Contains(parsedUserId) ? "true" : "false")">
+                    @(Model.Subscriptions != null && Model.Subscriptions.Contains(parsedUserId) ? "Отписаться" : "Подписаться")
+                </button>
+            }
+
+            <hr>
+
+            <h5>📝 Посты:</h5>
+            @if (posts != null && posts.Any())
+            {
+                <ul class="list-group post-list">
+                    @foreach (var post in posts)
+                    {
+                        <li class="list-group-item">
+                            <a href="/Post/Details/@post.Id" class="post-link">@post.Hider</a>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">Нет постов</p>
+            }
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#subscribeBtn").click(function () {
+            var button = $(this);
+            var userId = button.data("user-id");
+            var isSubscribed = button.data("is-subscribed") === "true";
+
+            $.ajax({
+                url: isSubscribed ? "/Unsub" : "/Sub",
+                type: "POST",
+                data: { targetUserId: userId },
+                success: function () {
+                    if (isSubscribed) {
+                        button.text("Подписаться").removeClass("btn-danger").addClass("btn-success");
+                        button.data("is-subscribed", "false");
+                    } else {
+                        button.text("Отписаться").removeClass("btn-success").addClass("btn-danger");
+                        button.data("is-subscribed", "true");
+                    }
+                },
+                error: function () {
+                    alert("Ошибка! Попробуйте снова.");
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    body {
+        background-color: #f4f7fc;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .profile-container {
+        max-width: 500px;
+        margin: 40px auto;
+    }
+
+    .profile-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        background: #fff;
+        padding: 20px;
+    }
+
+    .post-list {
+        margin-top: 15px;
+    }
+
+    .post-link {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: 500;
+    }
+
+        .post-link:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+
+    .btn-success, .btn-danger {
+        width: 100%;
+        font-weight: bold;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-success:hover {
+            background-color: #28a745;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc3545;
+        }
+</style>

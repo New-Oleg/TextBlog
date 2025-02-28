@@ -4,44 +4,95 @@
     ViewData["Title"] = "Вход";
 }
 
-<h2 class="text-center">Вход</h2>
+<h2 class="text-center text-primary">🔑 Вход</h2>
 
 <form asp-action="Login" asp-controller="Auth" method="post" class="form-container">
 
     <div class="form-group">
-        <label asp-for="Login">Логин</label>
-        <input asp-for="Login" class="form-control" placeholder="Введите логин" required />
+        <label asp-for="Login" class="form-label">Логин</label>
+        <input asp-for="Login" class="form-control input-custom" placeholder="Введите логин" required />
         <span asp-validation-for="Login" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Password">Пароль</label>
-        <input asp-for="Password" type="password" class="form-control" placeholder="Введите пароль" required />
+        <label asp-for="Password" class="form-label">Пароль</label>
+        <input asp-for="Password" type="password" class="form-control input-custom" placeholder="Введите пароль" required />
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
 
-    <button type="submit" class="btn btn-primary btn-block">Войти</button>
+    <button type="submit" class="btn btn-primary btn-block">🚀 Войти</button>
 </form>
 
-<div class="text-center">
-    <a asp-action="Register" asp-controller="Padge">Нет Аккаунта?</a>
+<div class="text-center mt-3">
+    <a asp-action="Register" asp-controller="Padge" class="register-link">Нет аккаунта? Зарегистрируйтесь!</a>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-
 }
 
 <style>
+    body {
+        background-color: #f4f7fc;
+        font-family: 'Arial', sans-serif;
+    }
+
     .form-container {
         max-width: 400px;
-        margin: 0 auto;
-        padding: 20px;
-        border-radius: 10px;
-        background-color: #f8f9fa;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        margin: 40px auto;
+        padding: 25px;
+        border-radius: 12px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
+
+    h2 {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .input-custom {
+        border-radius: 8px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .input-custom:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+            outline: none;
+        }
+
     .btn-block {
         width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        transition: background 0.3s ease-in-out;
     }
+
+    .btn-primary {
+        background: #007bff;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+    .register-link {
+        color: #007bff;
+        font-weight: bold;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+        .register-link:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
 </style>

@@ -5,18 +5,17 @@ namespace TextBlog.Repositorys
 {
     public interface IUserRepository
     {
-        User? GetById(Guid id); 
+        User? GetById(Guid id);
+        Task<User?> GetByIdAsync(Guid id);
         User? GetByLogin(string login); 
         IEnumerable<UserDto> GetAll();
         void Add(User user);
-        void Update(User user);
         void Delete(Guid id);
         bool Exists(Guid id);
         bool Exists(string login);
+        Task Update(User user);
 
-        void Subscribe(Guid userId, Guid authorId);
-        void Unsubscribe(Guid userId, Guid authorId);
-        IEnumerable<User> GetSubscribedUsers(Guid userId);
+        IEnumerable<UserDto> GetSubscribedUsers(Guid userId);
         UserDto? GetUserDtoFromToken(string token);
     }
 }

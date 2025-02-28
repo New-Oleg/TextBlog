@@ -41,32 +41,9 @@ namespace TextBlog.Controllers
             return View();
             }
 
-            return RedirectToAction("Index", "Padge");
-        }
-
-        [HttpGet("/Home")] 
-        public IActionResult Index()
-        {
-            var token = Request.Cookies["AuthToken"];
-
-            if (string.IsNullOrEmpty(token) || !_authService.ValidateToken(token)) //если токен инвалид редирект на страницу логина
-            {
-                return RedirectToAction("Login", "Padge");
-            }
-
             var userDto = _userRepos.GetUserDtoFromToken(token); // получение себя(дто) по jwt
-            if (userDto == null) // проверка на существование себя
-            {
-                return Unauthorized(new { message = "Пользователь не найден" });
-            }
 
-            var postDto = _postRepos.GetByAuthor(userDto.Id);
-            if (postDto != null)
-            {
-                ViewData["Posts"] = postDto;
-            }
-
-            return View(userDto); 
+            return Redirect( userDto.Id + "");
         }
 
         [HttpGet("/CreatePost")]
@@ -81,12 +58,6 @@ namespace TextBlog.Controllers
             return View();
         }
 
-        [HttpGet("Logout")]
-        public IActionResult Logout()
-        {
-            Response.Cookies.Delete("AuthToken"); // Удаляем куку с токеном
-            return RedirectToAction("Login", "Padge"); // Редирект на страницу входа
-        }
 
 
         [HttpGet("/FundUsers")]
@@ -110,30 +81,8 @@ namespace TextBlog.Controllers
             return View(users); 
         }
 
-        [HttpGet("/{userId}")]
-        public IActionResult User(Guid userId)
-        {
-            var token = Request.Cookies["AuthToken"];
 
-            if (string.IsNullOrEmpty(token) || !_authService.ValidateToken(token)) //если токен инвалид редирект на страницу логина
-            {
-                return RedirectToAction("Login", "Padge");
-            }
 
-            var userDto = _userRepos.GetById(userId); // получение чела(дто) по ID
-            if (userDto == null) // проверка на существование чела
-            {
-                return Unauthorized(new { message = "Пользователь не найден" });
-            }
-
-            var postDto = _postRepos.GetByAuthor(userDto.Id); // если есть посты отоброзить их
-            if (postDto != null)
-            {
-                ViewData["Posts"] = postDto;
-            }
-
-            return View("Index", userDto.ParsToDto());
-        }
 
     }
 }

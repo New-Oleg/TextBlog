@@ -14,30 +14,35 @@
         <header>
             <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom border-1 box-shadow mb-3">
                 <div class="container-fluid">
-                    <a class="navbar-brand" asp-area="" asp-controller="Padge" asp-action="Index">TextBlog</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+                    <a class="navbar-brand" href="/">TextBlog</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Padge" asp-action="CreatePost">Создать Пост</a>
-							</li>
-							<li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Padge" asp-action="FindUsers">Поиск Других Человеков</a>
+                                <a class="nav-link text-dark nav-button" asp-area="" asp-controller="Padge" asp-action="CreatePost">
+                                    ✏️ Создать Пост
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Padge" asp-action="Index">Подписки</a>
+                                <a class="nav-link text-dark nav-button" asp-area="" asp-controller="Padge" asp-action="FindUsers">
+                                    🔍 Поиск пользователей
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Padge" asp-action="Logout">Выйти из аккаунта</a>
+                                <a class="nav-link text-dark nav-button logout-button" asp-area="" asp-controller="User" asp-action="Logout">
+                                    🚪 Выйти
+                                </a>
                             </li>
                         </ul>
                     </div>
                 </div>
             </nav>
         </header>
+
+
     }
     <div class="container">
         <main role="main" class="pb-3">
@@ -52,3 +57,26 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
+<style>
+	.nav-button {
+		padding: 10px 15px;
+		border-radius: 8px;
+		transition: background-color 0.3s, transform 0.2s;
+		margin-right: 10px; /* Разграничение между кнопками */
+	}
+
+		.nav-button:hover {
+			background-color: #f0f0f0;
+			transform: scale(1.05);
+		}
+
+	.logout-button {
+		background-color: #ff4d4d;
+		color: white;
+	}
+
+		.logout-button:hover {
+			background-color: #cc0000;
+		}
+</style>

@@ -14,6 +14,7 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 builder.Services.AddScoped<AuthService>(); //jwr/auth 
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddSignalR(); //signalR
 
@@ -25,7 +26,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 var app = builder.Build();
 
 
-app.MapHub<CommentHub>("/commentHub"); //signalR
+app.MapHub<CommentHub>("/SignalRHub/CommentHub"); //signalR
+
+
+
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

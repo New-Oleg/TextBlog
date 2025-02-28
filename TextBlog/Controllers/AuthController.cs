@@ -32,7 +32,7 @@ namespace TextBlog.Controllers
                 PasswordHash = _authService.HashPassword(request.Password),
             };
             _userRepo.Add(user);
-            return RedirectToAction("Index", "Padge");
+            return RedirectToAction("Login", "Padge");
         }
 
         [HttpPost("login")]
@@ -48,7 +48,9 @@ namespace TextBlog.Controllers
             Response.Cookies.Append("AuthToken", token, new CookieOptions { HttpOnly = true, Secure = true });
 
             // Редирект на Index в контроллере Padge
-            return RedirectToAction("Index", "Padge");
+            var userDto = _userRepo.GetUserDtoFromToken(token); // получение себя(дто) по jwt
+
+            return Redirect(userDto.Id + "");
         }
 
 

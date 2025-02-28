@@ -2,41 +2,81 @@
 @model IEnumerable<UserDto>
 
 @{
-	ViewData["Title"] = "Создание поста";
+    ViewData["Title"] = "Поиск пользователей";
 }
 
-<div class="card">
-    <div class="card-body">
+<div class="search-container">
+    <div class="card search-card">
+        <div class="card-body">
+            <h3 class="text-center text-primary">🔍 Поиск пользователей</h3>
 
-        <form asp-action="FindUsers" asp-controller="Padge" method="get">
-            <input type="text" name="query" placeholder="Введите ник..." class="form-control" />
-            <button type="submit" class="btn btn-primary mt-2">Найти</button>
-        </form>
+            <form asp-action="FindUsers" asp-controller="Padge" method="get" class="search-form">
+                <div class="input-group">
+                    <input type="text" name="query" placeholder="Введите ник..." class="form-control" />
+                    <button type="submit" class="btn btn-primary">Найти</button>
+                </div>
+            </form>
 
-        <h5>Человеки:</h5>
-            <ul>
-                @foreach (var user in Model)
-                {
-                    <a href="/@user.Id">
-                    <li>@user.Name</li>
-                    </a>
-                }
-            </ul>
+            <hr>
+
+            <h5 class="mt-3">👤 Найденные пользователи:</h5>
+
+            @if (Model != null && Model.Any())
+            {
+                <ul class="list-group user-list">
+                    @foreach (var user in Model)
+                    {
+                        <li class="list-group-item">
+                            <a href="/@user.Id" class="user-link">@user.Name</a>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="text-muted">Никого не найдено</p>
+            }
+        </div>
     </div>
 </div>
 
-
 <style>
-    .form-container {
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 20px;
-        border-radius: 10px;
-        background-color: #f8f9fa;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    body {
+        background-color: #f4f7fc;
+        font-family: 'Arial', sans-serif;
     }
 
-    .btn-block {
-        width: 100%;
+    .search-container {
+        max-width: 500px;
+        margin: 40px auto;
     }
+
+    .search-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        background: #fff;
+        padding: 20px;
+    }
+
+    .search-form {
+        margin-bottom: 20px;
+    }
+
+    .user-list {
+        margin-top: 15px;
+    }
+
+    .user-link {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: 500;
+        display: block;
+        padding: 8px;
+        transition: all 0.3s;
+    }
+
+        .user-link:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
 </style>

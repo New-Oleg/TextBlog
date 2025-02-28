@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using TextBlog.Dtos;
 using TextBlog.Models;
 using TextBlog.Repositorys;
@@ -49,7 +50,14 @@ namespace TextBlog.Controllers
         [HttpGet("Post/Details/{postId}")]
         public IActionResult Details(Guid postId) {
 
-            var commentsDto = _commentRepo.GetByPostId(postId); // если есть посты отоброзить их
+            var token = Request.Cookies["AuthToken"];
+
+            if (string.IsNullOrEmpty(token) || !_authService.ValidateToken(token)) //если токен инвалид редирект на страницу логина
+            {
+                return RedirectToAction("Login", "Padge");
+            }
+
+            var commentsDto = _commentRepo.GetByPostId(postId); // если есть коментарии отоброзить их
             if (commentsDto != null)
             {
                 ViewData["comments"] = commentsDto;
@@ -61,26 +69,21 @@ namespace TextBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(Guid postId, string commentText)
         {
+
+            var token = Request.Cookies["AuthToken"];
+
             if (string.IsNullOrWhiteSpace(commentText))
                 return BadRequest("Комментарий не может быть пустым.");
 
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (string.IsNullOrEmpty(userIdClaim))
-            {
-                return Unauthorized("Пользователь не авторизован.");
-            }
-
-            if (!Guid.TryParse(userIdClaim, out Guid userId))
-            {
-                return BadRequest("Неверный формат идентификатора пользователя.");
-            }
+            var userDto = _userRepo.GetUserDtoFromToken(token);
 
             var comment = new Comment
             {
                 Id = Guid.NewGuid(),
                 PostId = postId,
-                AuthorId = userId,
+                AuthorId = userDto.Id,
                 Text = commentText,
                 PublishTime = DateTime.UtcNow
             };
@@ -88,7 +91,7 @@ namespace TextBlog.Controllers
             _commentRepo.Add(comment);
 
             // Отправка сообщения через SignalR
-            await _hubContext.Clients.All.SendAsync("ReceiveComment", postId.ToString(), userId.ToString(), comment.ParsToDto());
+            await _hubContext.Clients.All.SendAsync("ReceiveComment", postId.ToString(), userDto.Id.ToString(), comment.Text);
 
             return RedirectToAction("Details", "Post", new { postId });
         }

@@ -22,6 +22,13 @@ namespace TextBlog.Repositorys
                 ?? _context.Users.FirstOrDefault(u => u.Id == id);
         }
 
+        public async Task<User?> GetByIdAsync(Guid id)
+        {
+            return _context.Users.Local.FirstOrDefault(u => u.Id == id)
+                ?? await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+
         public User? GetByLogin(string login)
         {
             return _context.Users.FirstOrDefault(u => u.Login == login);
@@ -50,16 +57,6 @@ namespace TextBlog.Repositorys
             _context.SaveChanges();   
         }
 
-        public void Update(User user)
-        {
-            if (!_context.Users.Any(u => u.Id == user.Id))
-            {
-                throw new ArgumentException($"User with ID '{user.Id}' not found.");
-            }
-
-            _context.Users.Update(user);
-            _context.SaveChanges();    
-        }
 
         public void Delete(Guid id)
         {
@@ -69,6 +66,11 @@ namespace TextBlog.Repositorys
                 _context.Users.Remove(userToRemove); 
                 _context.SaveChanges();             
             }
+        }
+        public async Task Update(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
 
         public bool Exists(Guid id)
@@ -81,35 +83,18 @@ namespace TextBlog.Repositorys
             return _context.Users.Any(u => u.Login == login);
         }
 
-        public void Subscribe(Guid userId, Guid authorId)
+
+        public IEnumerable<UserDto> GetSubscribedUsers(Guid userId)
         {
             var user = GetById(userId);
-            if (user == null) throw new ArgumentException($"User with ID '{userId}' not found.");
+            if (user == null)
+                throw new ArgumentException($"User with ID '{userId}' not found.");
 
-            if (!user.Subscriptions.Contains(authorId))
-            {
-                user.Subscriptions.Add(authorId);
-                _context.SaveChanges(); 
-            }
+            return _context.Users
+                .Where(u => user.Subscriptions.Contains(u.Id))
+                .Select(u => u.ParsToDto()) // Применяем ParsToDto() для каждого пользователя
+                .ToList();
         }
-
-        public void Unsubscribe(Guid userId, Guid authorId)
-        {
-            var user = GetById(userId);
-            if (user == null) throw new ArgumentException($"User with ID '{userId}' not found.");
-
-            user.Subscriptions.Remove(authorId);
-            _context.SaveChanges(); 
-        }
-
-        public IEnumerable<User> GetSubscribedUsers(Guid userId)
-        {
-            var user = GetById(userId);
-            if (user == null) throw new ArgumentException($"User with ID '{userId}' not found.");
-
-            return _context.Users.Where(u => user.Subscriptions.Contains(u.Id)).ToList();
-        }
-
 
         public UserDto? GetUserDtoFromToken(string token)
         {
@@ -135,5 +120,6 @@ namespace TextBlog.Repositorys
                 return null;
             }
         }
+
     }
 }

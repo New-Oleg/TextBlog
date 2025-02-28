@@ -4,76 +4,143 @@
 
 @{
 	ViewData["Title"] = "Детали поста";
-
-	var comments = ViewData["comments"] as IEnumerable<CommentDto>; // Приведение типа
+	var comments = ViewData["comments"] as IEnumerable<CommentDto>;
 }
 
-<div class="card">
+<div class="post-container">
+	<div class="card">
+		<div class="card-body">
+			<h3 class="text-primary">@Model.Hider</h3>
+			<p class="text-muted">📅 @Model.PublishTime</p>
+			<p class="post-content">@Model.Text</p>
 
-	<div class="card-body">
-		<p>Огловление: @Model.Hider</p>
-		<p>Содержание: @Model.Text</p>
-		<p>Время Публикации - @Model.PublishTime</p>
+			<div class="likes-dislikes">
+				<span>👍 @Model.Likes</span>
+				<span>👎 @Model.Dislikes</span>
+			</div>
 
-		<p>лайков - @Model.Likes</p>
-		<p>дизлайков - @Model.Dislikes</p>
+			<hr>
 
-		<h5>Комментарии:</h5>
+			<h5>💬 Комментарии:</h5>
 
-		<form method="post" action="/Post/AddComment">
-			<input type="hidden" name="postId" value="@Model.Id" />
-			<input type="text" name="commentText" placeholder="Оставить комментарий" class="form-control" required />
-			<button type="submit" class="btn btn-primary mt-2">Отправить</button>
-		</form>
+			<form method="post" action="/Post/AddComment" class="comment-form">
+				<input type="hidden" name="postId" value="@Model.Id" />
+				<input type="text" name="commentText" placeholder="Оставьте комментарий..." class="form-control input-comment" required />
+				<button type="submit" class="btn btn-primary mt-2 btn-comment">Отправить</button>
+			</form>
 
-		<div>
-			@if (comments != null)
-			{
-				<ul>
-					@foreach (var comment in comments){
-						<h4>comment.AuthorId: Text</h4>
-					}
-				</ul>
-			}
-			else
-			{
-				<p>Нет комментариев</p>
-			}
+			<div class="comment-section">
+				@if (comments != null && comments.Any())
+				{
+					<ul id="commentList" class="list-group">
+						@foreach (var comment in comments)
+						{
+							<li class="list-group-item">
+								<strong>@comment.AuthorId</strong>
+								<span class="text-muted">— @comment.PublishTime</span>
+								<p>@comment.Text</p>
+							</li>
+						}
+					</ul>
+				}
+				else
+				{
+					<p class="text-muted">Нет комментариев</p>
+				}
+			</div>
 		</div>
 	</div>
-
 </div>
-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 <script>
 	const connection = new signalR.HubConnectionBuilder()
-		.withUrl("/commentHub")
+		.withUrl("/SignalRHub/CommentHub")
 		.build();
 
-	connection.on("ReceiveComment", function (postId, user, message) {
+	connection.on("ReceiveComment", function (postId, user, message, publishTime) {
 		if (postId === "@Model.Id") {
 			const commentList = document.getElementById("commentList");
 			const newComment = document.createElement("li");
-			newComment.innerHTML = `<strong>${user}:</strong> ${message}`;
+			newComment.classList.add("list-group-item");
+			newComment.innerHTML = `<strong>${user}</strong> <span class="text-muted">— ${publishTime}</span><p>${message}</p>`;
+
 			commentList.appendChild(newComment);
+			commentList.scrollTop = commentList.scrollHeight; // Прокрутка вниз
 		}
 	});
 
-	connection.start().catch(err => console.error(err.toString()));
+	connection.start()
+		.then(() => console.log("SignalR Connected"))
+		.catch(err => console.error("SignalR Connection Error:", err.toString()));
 </script>
 
 <style>
-	.form-container {
-		max-width: 400px;
-		margin: 0 auto;
-		padding: 20px;
-		border-radius: 10px;
-		background-color: #f8f9fa;
-		box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+	body {
+		background-color: #f4f7fc;
+		font-family: 'Arial', sans-serif;
 	}
 
-	.btn-block {
+	.post-container {
+		max-width: 600px;
+		margin: 40px auto;
+	}
+
+	.card {
+		border-radius: 12px;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		background: #fff;
+		padding: 20px;
+	}
+
+	.post-content {
+		font-size: 16px;
+		line-height: 1.5;
+		margin-bottom: 10px;
+	}
+
+	.likes-dislikes {
+		display: flex;
+		gap: 15px;
+		font-size: 18px;
+		font-weight: bold;
+	}
+
+	.comment-form {
+		margin-bottom: 20px;
+	}
+
+	.input-comment {
+		border-radius: 8px;
+		padding: 10px;
+		border: 1px solid #ccc;
+		transition: all 0.3s ease-in-out;
+	}
+
+		.input-comment:focus {
+			border-color: #007bff;
+			box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+			outline: none;
+		}
+
+	.btn-comment {
 		width: 100%;
+		border-radius: 8px;
+		transition: background 0.3s ease-in-out;
+	}
+
+	.btn-primary:hover {
+		background: #0056b3;
+	}
+
+	.comment-section {
+		margin-top: 20px;
+	}
+
+	.list-group-item {
+		background: #f8f9fa;
+		border-radius: 8px;
+		margin-top: 8px;
+		padding: 10px;
 	}
 </style>
