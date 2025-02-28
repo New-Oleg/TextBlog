@@ -53,7 +53,7 @@ namespace TextBlog.Controllers
 
             if (string.IsNullOrEmpty(token) || !_authService.ValidateToken(token)) //если токен инвалид редирект на страницу логина
             {
-                return RedirectToAction("Login", "Padge");
+                return Redirect("/");
             }
             return View();
         }
@@ -67,7 +67,7 @@ namespace TextBlog.Controllers
 
             if (string.IsNullOrEmpty(token) || !_authService.ValidateToken(token)) //если токен инвалид редирект на страницу логина
             {
-                return RedirectToAction("Login", "Padge");
+                return Redirect("/");
             }
             if (string.IsNullOrEmpty(query))
             {

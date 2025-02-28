@@ -10,6 +10,7 @@ namespace TextBlog.Services
     public class AuthService
     {
         private readonly IConfiguration _config;
+        private readonly Dictionary<Guid, string> _refreshTokens = new();
 
         public AuthService(IConfiguration config)
         {
@@ -37,6 +38,39 @@ namespace TextBlog.Services
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomBytes);
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        public void StoreRefreshToken(Guid userId, string refreshToken)
+        {
+            _refreshTokens[userId] = refreshToken;
+        }
+
+        public bool ValidateRefreshToken(Guid userId, string refreshToken)
+        {
+            return _refreshTokens.TryGetValue(userId, out var storedToken) && storedToken == refreshToken;
+        }
+
+        public (string, string)? RefreshToken(string expiredToken, string refreshToken)
+        {
+            var userId = GetUserIdFromToken(expiredToken);
+            if (userId == null || !ValidateRefreshToken(userId.Value, refreshToken))
+            {
+                return null;
+            }
+
+            var newAccessToken = GenerateToken(new User { Id = userId.Value });
+            var newRefreshToken = GenerateRefreshToken();
+            StoreRefreshToken(userId.Value, newRefreshToken);
+
+            return (newAccessToken, newRefreshToken);
         }
 
         public Guid? GetUserIdFromToken(string token)

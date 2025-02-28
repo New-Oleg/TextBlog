@@ -44,7 +44,9 @@ namespace TextBlog.Controllers
             );
 
             _postRepo.Add(post);
-            return RedirectToAction("Index", "Padge");
+
+            var userDto = _userRepo.GetUserDtoFromToken(token); // получение себя(дто) по jwt
+            return Redirect(userDto.Id + "");
         }
 
         [HttpGet("Post/Details/{postId}")]
@@ -54,7 +56,7 @@ namespace TextBlog.Controllers
 
             if (string.IsNullOrEmpty(token) || !_authService.ValidateToken(token)) //если токен инвалид редирект на страницу логина
             {
-                return RedirectToAction("Login", "Padge");
+                return Redirect("/");
             }
 
             var commentsDto = _commentRepo.GetByPostId(postId); // если есть коментарии отоброзить их
